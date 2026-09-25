@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # https://github.com/P3TERX/Actions-OpenWrt
-# File name: diy-part2.sh
+# File name: diy-qlb.sh
 # Description: OpenWrt DIY script part 2 (After Update feeds)
 #
 # Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
@@ -30,37 +30,31 @@ sed -i -e '/^IMG_PREFIX:=/i BUILD_DATE := $(shell date +%Y%m%d)' \
 # sed -i 's/reg = <0x5c0000 0x7000000>;/reg = <0x5c0000 0x7a40000>;/' target/linux/mediatek/dts/mt7981b-cudy-tr3000-v1-ubootmod.dts
 
 # Enable USB power for Cudy TR3000 by default
-sed -i '/modem-power/,/};/{s/gpio-export,output = <1>;/gpio-export,output = <0>;/}' target/linux/mediatek/dts/mt7981b-cudy-tr3000-v1.dtsi
+#sed -i '/modem-power/,/};/{s/gpio-export,output = <1>;/gpio-export,output = <0>;/}' target/linux/mediatek/dts/mt7981b-cudy-tr3000-v1.dtsi
 
 # 
-cp target/linux/mediatek/dts/mt7981b-cudy-tr3000-v1.dts target/linux/mediatek/dts/mt7981b-cudy-tr3000-512mb-v1.dts
-cp target/linux/mediatek/dts/mt7981b-cudy-tr3000-v1.dtsi target/linux/mediatek/dts/mt7981b-cudy-tr3000-512mb-v1.dtsi
+#cp target/linux/mediatek/dts/mt7981b-cudy-tr3000-v1.dts target/linux/mediatek/dts/mt7981b-cudy-tr3000-512mb-v1.dts
+#cp target/linux/mediatek/dts/mt7981b-cudy-tr3000-v1.dtsi target/linux/mediatek/dts/mt7981b-cudy-tr3000-512mb-v1.dtsi
 
-sed -i 's|reg = <0x5c0000 0x4000000>;|reg = <0x5c0000 0x1FA40000>;|' target/linux/mediatek/dts/mt7981b-cudy-tr3000-512mb-v1.dts
-
-# 
-sed -i -e '/partition@5c0000 {/,/^[ \t]*};/ {
-    s|compatible = "linux,ubi";|reg = <0x5c0000 0x1FA40000>;\n\t\tcompatible = "linux,ubi";|
-}' target/linux/mediatek/dts/mt7981b-cudy-tr3000-512mb-v1.dtsi
+#sed -i 's|reg = <0x5c0000 0x4000000>;|reg = <0x5c0000 0x1FA40000>;|' target/linux/mediatek/dts/mt7981b-cudy-tr3000-512mb-v1.dts
 
 # 
-grep -q "define Device/cudy_tr3000-512mb-v1" target/linux/mediatek/image/filogic.mk || sed -i '/TARGET_DEVICES += cudy_wbr3000uax-v1-ubootmod/ a \
-define Device/cudy_tr3000-512mb-v1\
-  DEVICE_VENDOR := Cudy\
-  DEVICE_MODEL := TR3000\
-  DEVICE_VARIANT := v1 (512MB NAND)\
-  DEVICE_DTS := mt7981b-cudy-tr3000-512mb-v1\
+grep -q "define Device/QLB-4Pro" target/linux/mediatek/image/filogic.mk || sed -i '/TARGET_DEVICES += cudy_wbr3000uax-v1-ubootmod/ a \
+define Device/QLB-4Pro\
+  DEVICE_VENDOR := QLB\
+  DEVICE_MODEL := 4Pro\
+  DEVICE_VARIANT := v1\
+  DEVICE_DTS := mt7981b-QLB-4Pro\
   DEVICE_DTS_DIR := ../dts\
-  SUPPORTED_DEVICES += R47-512MB\
-  UBINIZE_OPTS := -E 5\
+  SUPPORTED_DEVICES += R47\
   BLOCKSIZE := 128k\
   PAGESIZE := 2048\
-  IMAGE_SIZE := 507904k\
+  IMAGE_SIZE := 113408k\
   KERNEL_IN_UBI := 1\
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata\
-  DEVICE_PACKAGES := kmod-usb3 kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware automount\
+  DEVICE_PACKAGES := kmod-usb3 f2fsck mkf2fs\
 endef\
-TARGET_DEVICES += cudy_tr3000-512mb-v1\
+TARGET_DEVICES += QLB-4Pro\
 ' target/linux/mediatek/image/filogic.mk
 
 # 网络配置支持匹配新设备名
